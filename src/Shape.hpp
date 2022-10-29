@@ -22,8 +22,9 @@ class Shape {
         float a, b;
         float ma, n1a, n2a, n3a, ra;
         float mb, n1b, n2b, n3b, rb;
-        float radius, fuzzy, randomPer;
-        int meshes;
+        float radius, fuzzy, randomFollow, hue, saturation;
+        float xRotationInc, yRotationInc, zRotationInc;
+        int shapeType, numMeshes, pointSize;
     
         void setup();
         void update();
@@ -33,10 +34,26 @@ class Shape {
     
         void setMeshes(int _meshes);
         void setFuzzy(float _fuzzy);
+        void setSimplexMorph(float _rate, float _depth, float _offset, float _wrap);
+    
         void updateShape();
+        void setPointSize(int size);
+        void setPointHue(float hue);
+        void setPointSaturation(float saturation);
+        void setRotateX(float rotationInc);
+        void setRandomPosition();
+        void swap();
+        void explode();
         void setShapeA(float m, float n1, float n2, float n3);
         void setShapeB(float m, float n1, float n2, float n3);
-        void setRandomPer(float p);
+        void setRandomFollow(float rf);
+        void setShapeType(int which);
+        
+        int getShapeType();
+        int getNumMeshes();
+        int getPointSize();
+        float getRandomFollow();
+        float getRotateX();
 };
 
 #endif /* Shape_hpp */
