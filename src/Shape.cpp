@@ -115,7 +115,6 @@ void Shape::setMeshes(int _numMeshes) {
 void Shape::updateShape() {
    for (int i = 0; i < numMeshes + 1; i++) {
      float lat = ofMap(i, 0, numMeshes, -HALF_PI, HALF_PI);
-
      float r2 = supershape(lat, mb, n1b, n2b, n3b);
 
      for (int j = 0; j < numMeshes + 1; j++) {
@@ -131,26 +130,59 @@ void Shape::updateShape() {
    }
  }
 
+
+ofVec3f calculateNormal(ofVec3f a, ofVec3f b, ofVec3f c) {
+    ofVec3f BA = (b - a);
+    ofVec3f CA = (c - a);
+
+    return (BA.cross(CA)).normalize();
+}
+
 void Shape::update(){
+    ofVec3f a, b, c;
+
     for (int i = 0; i < numMeshes + 1; i++) {
         for (int j = 0; j < numMeshes + 1; j++) {
-        
             if (fuzzy > 0) {
                 particles[i][j].pos.x += ofRandom(-fuzzy, fuzzy);
                 particles[i][j].pos.y += ofRandom(-fuzzy, fuzzy);
                 particles[i][j].pos.z += ofRandom(-fuzzy, fuzzy);
             }
             particles[i][j].update();
+            
+            //
+            
+            mesh.addVertex(particles[i][j].getPosition());
+            if (j > 0 && j < numMeshes + 1) {
+                a = particles[i][j - 1].getPosition();
+                b = particles[i][j].getPosition();
+                c = particles[i][j + 1].getPosition();
+            }
+            // cout << calculateNormal(a, b, c) << endl;
+            mesh.addNormal(calculateNormal(a, b, c));
         }
     }
+}
+
+void Shape::draw(){
+    mesh.draw();
+}
+
+void Shape::clearMesh() {
+    mesh.clearVertices();
+    mesh.clearNormals();
 }
 
 void Shape::setFuzzy(float _fuzzy){
     fuzzy = _fuzzy;
 }
 
-void Shape::setPointHue(float _hue) {
+void Shape::setHueStart(float _hue) {
     hue = _hue;
+}
+
+void Shape::setHueDepth(float _depth) {
+    depth = _depth;
 }
 
 void Shape::setPointSaturation(float _saturation) {
@@ -163,21 +195,6 @@ void Shape::setSimplexMorph(float _rate, float _depth, float _offset, float _wra
             particles[i][j].setSimplexMorph(_rate, _depth, _offset, _wrap);
         }
     }
-}
-
-void Shape::draw(){
-    ofColor color;
-    color.setHsb(hue, saturation, 255);
-    ofSetColor(color);
-        
-    for (int i = 0; i < numMeshes + 1; i++) {
-        for (int j = 0; j < numMeshes + 1; j++) {
-            mesh.addVertex(particles[i][j].getPosition());
-        }
-    }
-    
-    mesh.drawVertices();
-    mesh.clearVertices();
 }
 
 float Shape::supershape(float theta, float m, float n1, float n2, float n3) {
@@ -248,4 +265,8 @@ int Shape::getNumMeshes() {
 
 float Shape::getRandomFollow() {
     return randomFollow;
+}
+
+ofVec3f Shape::getCentroid() {
+    return mesh.getCentroid();
 }

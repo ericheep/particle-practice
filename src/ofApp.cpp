@@ -2,31 +2,38 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofDisableArbTex();
+    
+    shader.load("shader");
+    
     randomButton.addListener(this, &ofApp::randomButtonPressed);
     swapButton.addListener(this, &ofApp::swapButtonPressed);
     explodeButton.addListener(this, &ofApp::explodeButtonPressed);
 
+    
     gui.setup();
-    gui.setDefaultWidth(50);
+    gui.setSize(150, 70);
     gui.setDefaultHeight(12);
     gui.add(shapeTypeSlider.setup("shape", 0, 0, 6));
-    gui.add(numMeshesSlider.setup("number meshes", 300, 0, 500));
-    gui.add(pointSizeSlider.setup("point size", 0, 1, 20));
-    gui.add(pointHueSlider.setup("point hue", 0.0, 0.0, 255));
-    gui.add(pointSaturationSlider.setup("point saturation", 255, 0.0, 255));
-    gui.add(rotateXSlider.setup("rotate x", 0.05, 0.0, 1.0));
+    gui.add(numMeshesSlider.setup("meshes", 200, 0, 300));
+    gui.add(pointSizeSlider.setup("size", 0, 2, 15));
+    gui.add(hueStartSlider.setup("hue start", 0.66, 0.0, 1.0));
+    gui.add(hueDepthSlider.setup("hue depth", 0.1, 0.0, 1.0));
+    gui.add(saturationSlider.setup("sat", 1.0, 0.0, 1.0));
+    gui.add(rotateXSlider.setup("rotate", 0.05, 0.0, 0.5));
     gui.add(fuzzySlider.setup("fuzzy", 0.0, 0.0, 1.5));
-    gui.add(randomFollow.setup("random follow", 0.5, 0.0, 1.0));
-    gui.add(simplexRate.setup("simplex size", 0., 0., 20.0));
-    gui.add(simplexOffset.setup("simplex offset", 0.001, 0.0, 0.01));
-    gui.add(simplexDepth.setup("simplex depth", 0.01, 0.01, 0.05));
-    gui.add(simplexWrap.setup("simplex wrap", 2 * TWO_PI, 0.0, 4 * TWO_PI));
-    gui.add(randomButton.setup("random position", 20, 20));
-    gui.add(explodeButton.setup("explode", 20, 20));
-    gui.add(swapButton.setup("swap", 20, 20));
+    gui.add(randomFollow.setup("follow", 0.9, 0.0, 1.0));
+    gui.add(simplexRate.setup("simp size", 0.0, 0., 20.0));
+    gui.add(simplexOffset.setup("simp offset", 0.002, 0.0, 0.01));
+    gui.add(simplexDepth.setup("simp depth", 0.01, 0.01, 0.05));
+    gui.add(simplexWrap.setup("simp wrap", 2 * TWO_PI, 0.0, 4 * TWO_PI));
+    gui.add(fresnelPowerSlider.setup("fresnel pow", 1.0, 0.001, 10.));
+    gui.add(randomButton.setup("random", 20, 12));
+    gui.add(explodeButton.setup("explode", 20, 12));
+    gui.add(swapButton.setup("swap", 20, 12));
 
     ofSetVerticalSync(TRUE);
-    cam.setDistance(100);
+    cam.setDistance(300);
     cam.setTarget(ofVec3f(0.0, 0.0, 0.0));
     
     shapes.push_back(Shape(500, 8, 2, 100));
@@ -67,33 +74,48 @@ void ofApp::update(){
         if (shapes[i].getPointSize() != pointSizeSlider) {
             shapes[i].setPointSize(pointSizeSlider);
         }
-        
-        shapes[i].setPointHue(pointHueSlider);
-        shapes[i].setPointSaturation(pointSaturationSlider);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0, 0, 0);
-
+    glEnable(GL_DEPTH_TEST);
     ofEnableDepthTest();
+    ofVec3f cameraPosition = cam.getGlobalPosition();
+    // cout << cameraPosition << endl;
+    //ofVec3f centroid = shapes[0].getCentroid();
+    //ofVec3f dir = camPosition - centroid;
+    
     cam.begin();
-    
-    ofPushMatrix();
-    ofRotateZDeg(xRotationInc);
-    for (int i = 0;  i < shapes.size(); i++) {
-        shapes[i].draw();
+    {
+        ofPushMatrix();
+        ofRotateZDeg(xRotationInc);
+        shader.begin();
+        {
+            shader.setUniform3f("u_cameraPosition", cameraPosition);
+            shader.setUniform1f("u_hueStart", hueStartSlider);
+            shader.setUniform1f("u_hueDepth", hueDepthSlider);
+            shader.setUniform1f("u_saturation", saturationSlider);
+            shader.setUniform1f("u_power", fresnelPowerSlider);
+
+            for (int i = 0;  i < shapes.size(); i++) {
+                shapes[i].update();
+                shapes[i].draw();
+                shapes[i].clearMesh();
+            }
+        }
+        shader.end();
+        
+        //cam.rotateRad(rotateXSlider, 0, 0, 0);
+        ofPopMatrix();
+
     }
-    
-    
-    ofPopMatrix();
-    // cam.rotateRad(rotateXSlider, 0, 0, 0);
     cam.end();
+    //
+    
     ofDisableDepthTest();
-
     gui.draw();
-
 }
 
 void ofApp::randomButtonPressed() {

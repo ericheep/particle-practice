@@ -3,6 +3,8 @@
 #include "ofxGui.h"
 #include "ofMain.h"
 #include "Shape.hpp"
+#include "ofxShaderFilter.h"
+#include "ofShader.h"
 
 class ofApp : public ofBaseApp{
 
@@ -33,12 +35,13 @@ class ofApp : public ofBaseApp{
     
         ofEasyCam cam;
         ofShader shader;
-    
+
         ofxIntSlider shapeTypeSlider;
         ofxIntSlider numMeshesSlider;
         ofxIntSlider pointSizeSlider;
-        ofxFloatSlider pointHueSlider;
-        ofxFloatSlider pointSaturationSlider;
+        ofxFloatSlider hueStartSlider;
+        ofxFloatSlider hueDepthSlider;
+        ofxFloatSlider saturationSlider;
         ofxFloatSlider fuzzySlider;
         ofxFloatSlider randomFollow;
         ofxFloatSlider simplexRate;
@@ -46,6 +49,7 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider simplexOffset;
         ofxFloatSlider simplexWrap;
         ofxFloatSlider rotateXSlider;
+        ofxFloatSlider fresnelPowerSlider;
         ofxButton randomButton;
         ofxButton explodeButton;
         ofxButton swapButton;
