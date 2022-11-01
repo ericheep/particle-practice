@@ -11,6 +11,10 @@ Shape::Shape(int _meshes, float _ma, float _mb, float _radius) {
     a = 1;
     b = 1;
     
+    xOffset = 0.0;
+    yOffset = 0.0;
+    zOffset = 0.0;
+    
     fuzzy = 0.1;
     randomFollow = 0.05;
         
@@ -48,7 +52,7 @@ int Shape::getPointSize() {
     return pointSize;
 }
 
-void Shape::setRandomPosition() {
+void Shape::random() {
     for (int i = 0; i < numMeshes + 1; i++) {
         for (int j = 0; j < numMeshes + 1; j++) {
             float x = ofRandom(-ofGetWidth(), ofGetWidth());
@@ -73,10 +77,6 @@ void Shape::explode() {
     
 }
 
-void Shape::setRotateX(float rotationInc) {
-    xRotationInc = rotationInc;
-}
-
 float Shape::getRotateX() {
     return xRotationInc;
 }
@@ -91,8 +91,18 @@ void Shape::setRandomFollow(float randomFollow) {
     }
 }
 
+void Shape::rotate(ofVec3f r) {
+    for (int i = 0; i < numMeshes + 1; i++) {
+        for (int j = 0; j < numMeshes + 1; j++) {
+            ofVec3f rot = particles[i][j].getTarget().getRotated(r.x, r.y, r.z);
+            particles[i][j].setTarget(rot);
+        }
+    }
+}
+
 void Shape::setMeshes(int _numMeshes) {
     numMeshes = _numMeshes;
+    particles.clear();
 
     for (int i = 0; i < numMeshes + 1; i++) {
         vector<Particle> particleRow;
@@ -140,7 +150,7 @@ ofVec3f calculateNormal(ofVec3f a, ofVec3f b, ofVec3f c) {
 
 void Shape::update(){
     ofVec3f a, b, c;
-
+    
     for (int i = 0; i < numMeshes + 1; i++) {
         for (int j = 0; j < numMeshes + 1; j++) {
             if (fuzzy > 0) {
@@ -149,16 +159,13 @@ void Shape::update(){
                 particles[i][j].pos.z += ofRandom(-fuzzy, fuzzy);
             }
             particles[i][j].update();
-            
-            //
-            
+                        
             mesh.addVertex(particles[i][j].getPosition());
             if (j > 0 && j < numMeshes + 1) {
                 a = particles[i][j - 1].getPosition();
                 b = particles[i][j].getPosition();
                 c = particles[i][j + 1].getPosition();
             }
-            // cout << calculateNormal(a, b, c) << endl;
             mesh.addNormal(calculateNormal(a, b, c));
         }
     }
@@ -265,8 +272,4 @@ int Shape::getNumMeshes() {
 
 float Shape::getRandomFollow() {
     return randomFollow;
-}
-
-ofVec3f Shape::getCentroid() {
-    return mesh.getCentroid();
 }

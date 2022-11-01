@@ -34,13 +34,12 @@ class ofApp : public ofBaseApp{
         float xRotationInc;
     
         ofEasyCam cam;
-        ofShader shader;
+        ofShader fresnel;
 
         ofxIntSlider shapeTypeSlider;
         ofxIntSlider numMeshesSlider;
         ofxIntSlider pointSizeSlider;
-        ofxFloatSlider hueStartSlider;
-        ofxFloatSlider hueDepthSlider;
+    
         ofxFloatSlider saturationSlider;
         ofxFloatSlider fuzzySlider;
         ofxFloatSlider randomFollow;
@@ -48,8 +47,26 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider simplexDepth;
         ofxFloatSlider simplexOffset;
         ofxFloatSlider simplexWrap;
+    
         ofxFloatSlider rotateXSlider;
-        ofxFloatSlider fresnelPowerSlider;
+        ofxFloatSlider rotateYSlider;
+        ofxFloatSlider rotateZSlider;
+    
+        // fresnel sliders
+        ofxFloatSlider hueStartSlider;
+        ofxFloatSlider hueDepthSlider;
+        ofxFloatSlider hueCurveSlider;
+    
+        ofxFloatSlider saturationStartSlider;
+        ofxFloatSlider saturationDepthSlider;
+        ofxFloatSlider saturationCurveSlider;
+    
+        ofxFloatSlider brightnessStartSlider;
+        ofxFloatSlider brightnessDepthSlider;
+        ofxFloatSlider brightnessCurveSlider;
+    
+        ofxFloatSlider bumpDepthSlider;
+
         ofxButton randomButton;
         ofxButton explodeButton;
         ofxButton swapButton;

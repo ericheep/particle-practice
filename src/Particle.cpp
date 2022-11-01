@@ -41,6 +41,14 @@ void Particle::setPosition(ofVec3f _pos) {
     pos = _pos;
 }
 
+void Particle::setTarget(ofVec3f _tar) {
+    tar = _tar;
+}
+
+ofVec3f Particle::getTarget() {
+    return tar;
+}
+
 void Particle::setScalar(float s) {
     scalar = s;
 }

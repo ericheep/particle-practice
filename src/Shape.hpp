@@ -18,8 +18,6 @@ class Shape {
         vector<vector<Particle>> particles;
 
         ofVboMesh mesh;
-        // ofVec3f v1[0];
-        // ofVec3f v2[0];
     
         float a, b;
         float ma, n1a, n2a, n3a, ra;
@@ -27,6 +25,7 @@ class Shape {
         float radius, fuzzy, randomFollow, hue, depth, saturation;
         float xRotationInc, yRotationInc, zRotationInc;
         int shapeType, numMeshes, pointSize;
+        float xOffset, yOffset, zOffset;
     
         void setup();
         void update();
@@ -44,21 +43,22 @@ class Shape {
         void setHueStart(float hue);
         void setHueDepth(float depth);
         void setPointSaturation(float saturation);
-        void setRotateX(float rotationInc);
-        void setRandomPosition();
-        void swap();
-        void explode();
+        void rotate(ofVec3f r);
+
         void setShapeA(float m, float n1, float n2, float n3);
         void setShapeB(float m, float n1, float n2, float n3);
         void setRandomFollow(float rf);
         void setShapeType(int which);
         
+        void random();
+        void swap();
+        void explode();
+    
         int getShapeType();
         int getNumMeshes();
         int getPointSize();
         float getRandomFollow();
         float getRotateX();
-        ofVec3f getCentroid();
 };
 
 #endif /* Shape_hpp */

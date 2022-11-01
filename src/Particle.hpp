@@ -40,7 +40,10 @@ class Particle {
         void setScalar(float s);
         void setFollow(float f);
         float getScalar();
+        
         ofVec3f getPosition();
+        ofVec3f getTarget();
+        void setTarget(ofVec3f tar);
     
     private:
         void simplexMorph();
