@@ -18,36 +18,29 @@ class ofApp : public ofBaseApp{
         void randomButtonPressed();
         void swapButtonPressed();
         void explodeButtonPressed();
-		
-        void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
     
         float xRotationInc;
     
         ofEasyCam cam;
         ofShader fresnel;
+        ofShader feedback;
 
+        ofxIntSlider primitiveTypeSlider;
         ofxIntSlider shapeTypeSlider;
         ofxIntSlider numMeshesSlider;
         ofxIntSlider pointSizeSlider;
     
-        ofxFloatSlider saturationSlider;
         ofxFloatSlider fuzzySlider;
         ofxFloatSlider randomFollow;
+    
+        // simplex sliders
         ofxFloatSlider simplexRate;
         ofxFloatSlider simplexDepth;
         ofxFloatSlider simplexOffset;
         ofxFloatSlider simplexWrap;
-    
+        ofxFloatSlider simplexPow;
+
+        // rotation sliders
         ofxFloatSlider rotateXSlider;
         ofxFloatSlider rotateYSlider;
         ofxFloatSlider rotateZSlider;
@@ -57,14 +50,13 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider hueDepthSlider;
         ofxFloatSlider hueCurveSlider;
     
-        ofxFloatSlider saturationStartSlider;
-        ofxFloatSlider saturationDepthSlider;
+        ofxFloatSlider saturationAmountSlider;
         ofxFloatSlider saturationCurveSlider;
     
-        ofxFloatSlider brightnessStartSlider;
-        ofxFloatSlider brightnessDepthSlider;
+        ofxFloatSlider brightnessAmountSlider;
         ofxFloatSlider brightnessCurveSlider;
     
+        ofxFloatSlider scaleFactorSlider;
         ofxFloatSlider bumpDepthSlider;
 
         ofxButton randomButton;

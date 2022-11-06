@@ -56,6 +56,8 @@
 /* Begin PBXFileReference section */
 		00D6D32B84B099226431108C /* ofxOsc.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxOsc.h; path = ../../../addons/ofxOsc/src/ofxOsc.h; sourceTree = SOURCE_ROOT; };
 		029684CF678F70F6D3537A29 /* OscOutboundPacketStream.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OscOutboundPacketStream.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscOutboundPacketStream.h; sourceTree = SOURCE_ROOT; };
+		062EAADD291329C2008C1AB3 /* feedback.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = feedback.frag; path = bin/data/feedback.frag; sourceTree = SOURCE_ROOT; };
+		062EAADE291340E5008C1AB3 /* feedback.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = feedback.vert; path = bin/data/feedback.vert; sourceTree = SOURCE_ROOT; };
 		065E3AEB290DE98900FE7238 /* fresnel.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fresnel.frag; path = bin/data/fresnel.frag; sourceTree = SOURCE_ROOT; };
 		065E3AEC290DE98900FE7238 /* fresnel.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fresnel.vert; path = bin/data/fresnel.vert; sourceTree = SOURCE_ROOT; };
 		0A1DAC09F322AE313A40706D /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxToggle.h; path = ../../../addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
@@ -785,6 +787,8 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				062EAADE291340E5008C1AB3 /* feedback.vert */,
+				062EAADD291329C2008C1AB3 /* feedback.frag */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				065E3AEB290DE98900FE7238 /* fresnel.frag */,
 				065E3AEC290DE98900FE7238 /* fresnel.vert */,

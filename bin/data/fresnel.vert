@@ -12,7 +12,7 @@ out float bumpOut;
 void main(){
     vec3 unitPosition = normalize(vec3(position.x, position.y, position.z));
     fresnelOut = dot(unitPosition, normalize(u_cameraPosition));
-    bumpOut = dot(normal, normalize(u_cameraPosition));
+    bumpOut = dot(normal, normalize(-u_cameraPosition));
 
     gl_Position = modelViewProjectionMatrix * position;
 }

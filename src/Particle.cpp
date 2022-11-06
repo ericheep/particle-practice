@@ -31,6 +31,14 @@ void Particle::updateTarget(float _x, float _y, float _z) {
     tar.z = _z;
 }
 
+ofVec3f Particle::getTarget() {
+    return tar;
+}
+
+void Particle::setTarget(ofVec3f _tar) {
+    tar = _tar;
+}
+
 void Particle::setPosition(float _x, float _y, float _z) {
     pos.x = _x;
     pos.y = _y;
@@ -41,12 +49,20 @@ void Particle::setPosition(ofVec3f _pos) {
     pos = _pos;
 }
 
-void Particle::setTarget(ofVec3f _tar) {
-    tar = _tar;
+void Particle::setNormal(ofVec3f _normal) {
+    normal = _normal;
 }
 
-ofVec3f Particle::getTarget() {
-    return tar;
+ofVec3f Particle::getNormal() {
+    return normal;
+}
+
+void Particle::setTriangleNormal(ofVec3f _triangleNormal) {
+    triangleNormal = _triangleNormal;
+}
+
+ofVec3f Particle::getTriangleNormal() {
+    return triangleNormal;
 }
 
 void Particle::setScalar(float s) {
@@ -64,21 +80,24 @@ void Particle::pointBetweenPoint(float per) {
 }
 
 void Particle::simplexMorph() {
-    float scl = simplexDepth;
-    float wrap = simplexWrap;
+    float x = pos.x * simplexDepth + off;
+    float y = pos.y * simplexDepth + off;
+    float z = pos.z * simplexDepth + off;
     
-    float x = pos.x * scl + off;
-    float y = pos.y * scl + off;
-    float z = pos.z * scl + off;
+    float mappedX = ofMap(ofNoise(x), 0.0, 1.0, -1.0, 1.0);
+    float mappedY = ofMap(ofNoise(y), 0.0, 1.0, -1.0, 1.0);
+    float mappedZ = ofMap(ofNoise(z), 0.0, 1.0, -1.0, 1.0);
     
-    float radX = ofNoise(y, z) * wrap;
-    float radZ = ofNoise(x, y) * wrap;
-    float radY = ofNoise(x, z) * wrap;
+    float magnitude = pow(ofNoise(x, y, z), simplexPow);
     
-    ofVec3f v(simplexRate, 0., 0.);
-    v.rotateRad(radX, ofVec3f(1.0, 0.0, 0.0));
-    v.rotateRad(radZ, ofVec3f(0.0, 0.0, 1.0));
-    v.rotateRad(radY, ofVec3f(0.0, 1.0, 0.0));
+    float rotX = mappedX * simplexWrap;
+    float rotY = mappedY * simplexWrap;
+    float rotZ = mappedZ * simplexWrap;
+
+    ofVec3f v(magnitude * simplexRate, 0, 0);
+    v.rotateRad(rotX, ofVec3f(1.0, 0.0, 0.0));
+    v.rotateRad(rotY, ofVec3f(0.0, 1.0, 0.0));
+    v.rotateRad(rotZ, ofVec3f(0.0, 0.0, 1.0));
 
     morph.x = v.x;
     morph.y = v.y;
@@ -97,11 +116,12 @@ void Particle::update(){
 void Particle::draw(){
 }
 
-void Particle::setSimplexMorph(float _rate, float _depth, float _offset, float _wrap) {
+void Particle::setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow) {
     simplexRate = _rate;
     simplexDepth = _depth;
     simplexOffset = _offset;
     simplexWrap = _wrap;
+    simplexPow = _pow;
 }
 
 float Particle::getScalar() {

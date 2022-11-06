@@ -24,8 +24,7 @@ class Shape {
         float mb, n1b, n2b, n3b, rb;
         float radius, fuzzy, randomFollow, hue, depth, saturation;
         float xRotationInc, yRotationInc, zRotationInc;
-        int shapeType, numMeshes, pointSize;
-        float xOffset, yOffset, zOffset;
+        int shapeType, numMeshes, pointSize, primitiveType;
     
         void setup();
         void update();
@@ -36,10 +35,11 @@ class Shape {
     
         void setMeshes(int _meshes);
         void setFuzzy(float _fuzzy);
-        void setSimplexMorph(float _rate, float _depth, float _offset, float _wrap);
+        void setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow);
     
         void updateShape();
         void setPointSize(int size);
+    void setPrimitiveType(int type);
         void setHueStart(float hue);
         void setHueDepth(float depth);
         void setPointSaturation(float saturation);
@@ -57,8 +57,14 @@ class Shape {
         int getShapeType();
         int getNumMeshes();
         int getPointSize();
+        int getPrimitiveType();
         float getRandomFollow();
         float getRotateX();
+
+private:
+    void updatePositions();
+    void updateNormals();
+    void updateMesh();
 };
 
 #endif /* Shape_hpp */

@@ -5,6 +5,7 @@ void ofApp::setup(){
     ofDisableArbTex();
     
     fresnel.load("fresnel");
+    // feedback.load("feedback");
     
     randomButton.addListener(this, &ofApp::randomButtonPressed);
     swapButton.addListener(this, &ofApp::swapButtonPressed);
@@ -13,8 +14,9 @@ void ofApp::setup(){
     gui.setup();
     gui.setSize(150, 70);
     gui.setDefaultHeight(12);
-    gui.add(shapeTypeSlider.setup("shape", 1, 0, 6));
-    gui.add(numMeshesSlider.setup("meshes", 300, 0, 400));
+    gui.add(primitiveTypeSlider.setup("primitive type", 0, 0, 3));
+    gui.add(shapeTypeSlider.setup("shape", 0, 0, 6));
+    gui.add(numMeshesSlider.setup("meshes", 200, 0, 400));
     gui.add(pointSizeSlider.setup("size", 2, 1, 15));
     gui.add(rotateXSlider.setup("rotate x", 0.0, 0.0, 1.0));
     gui.add(rotateYSlider.setup("rotate y", 0.0, 0.0, 1.0));
@@ -23,24 +25,24 @@ void ofApp::setup(){
     gui.add(fuzzySlider.setup("fuzzy", 0.0, 0.0, 10.0));
     gui.add(randomFollow.setup("follow", 0.9, 0.0, 1.0));
     
-    gui.add(simplexRate.setup("simp size", 2, 0., 20.0));
-    gui.add(simplexOffset.setup("simp offset", 0.004, 0.0, 0.01));
-    gui.add(simplexDepth.setup("simp depth", 0.025, 0.01, 0.05));
-    gui.add(simplexWrap.setup("simp wrap", 2 * TWO_PI, 0.0, 4 * TWO_PI));
+    gui.add(simplexRate.setup("simp size", 0, 0., 100.0));
+    gui.add(simplexOffset.setup("simp offset", 0.004, 0.0, 0.1));
+    gui.add(simplexDepth.setup("simp depth", 0.025, 0.0, 0.05));
+    gui.add(simplexWrap.setup("simp wrap", PI, 0.0, TWO_PI));
+    gui.add(simplexPow.setup("simp pow", 1.0, 0.0, 8.0));
 
     gui.add(hueStartSlider.setup("hue start", 0.75, 0.0, 1.0));
     gui.add(hueDepthSlider.setup("hue depth", 0.05, 0.0, 1.0));
     gui.add(hueCurveSlider.setup("hue curve", 1.2, 0.0, 5.0));
     
-    gui.add(saturationStartSlider.setup("saturation start", 0.2, 0.0, 1.0));
-    gui.add(saturationDepthSlider.setup("saturation depth", 1.0, 0.0, 1.0));
-    gui.add(saturationCurveSlider.setup("saturation curve", 1.6, 0.0, 5.0));
+    gui.add(saturationAmountSlider.setup("sat amount", 1.0, 0.0, 1.0));
+    gui.add(saturationCurveSlider.setup("sat curve", 1.0, 0.0, 2.0));
     
-    gui.add(brightnessStartSlider.setup("bri start", 1.0, 0.0, 1.0));
-    gui.add(brightnessDepthSlider.setup("bri depth", 0.4, 0.0, 1.0));
-    gui.add(brightnessCurveSlider.setup("bri curve", 3.4, 0.0, 5.0));
+    gui.add(brightnessAmountSlider.setup("bri amount", 1.0, 0.0, 1.0));
+    gui.add(brightnessCurveSlider.setup("bri curve", 1.0, 0.0, 2.0));
     
     gui.add(bumpDepthSlider.setup("bump depth", 0.03, 0.0, 1.0));
+    gui.add(scaleFactorSlider.setup("scale factor", 0.0, -10.0, 10.0));
 
     gui.add(randomButton.setup("random", 20, 12));
     // gui.add(explodeButton.setup("explode", 20, 12));
@@ -66,7 +68,11 @@ void ofApp::update(){
         
     for (int i = 0; i < shapes.size(); i++) {
         shapes[i].setFuzzy(fuzzySlider);
-        shapes[i].setSimplexMorph(simplexRate, simplexDepth, simplexOffset, simplexWrap);
+        shapes[i].setSimplexMorph(simplexRate, simplexDepth, simplexOffset, simplexWrap, simplexPow);
+        
+        if (shapes[i].getPrimitiveType() != primitiveTypeSlider) {
+            shapes[i].setPrimitiveType(primitiveTypeSlider);
+        }
         
         if (shapes[i].getShapeType() != shapeTypeSlider) {
             shapes[i].setShapeType(shapeTypeSlider);
@@ -113,19 +119,15 @@ void ofApp::draw(){
             fresnel.setUniform1f("u_hueDepth", hueDepthSlider);
             fresnel.setUniform1f("u_hueCurve", hueCurveSlider);
             
-            fresnel.setUniform1f("u_saturationStart", saturationStartSlider);
-            fresnel.setUniform1f("u_saturationDepth", saturationDepthSlider);
+            fresnel.setUniform1f("u_saturationAmount", saturationAmountSlider);
             fresnel.setUniform1f("u_saturationCurve", saturationCurveSlider);
 
-            fresnel.setUniform1f("u_brightnessStart", brightnessStartSlider);
-            fresnel.setUniform1f("u_brightnessDepth", brightnessDepthSlider);
+            fresnel.setUniform1f("u_brightnessAmount", brightnessAmountSlider);
             fresnel.setUniform1f("u_brightnessCurve", brightnessCurveSlider);
             
-            fresnel.setUniform1f("u_saturation", saturationSlider);
             fresnel.setUniform1f("u_bumpDepth", bumpDepthSlider);
         }
         fresnel.end();
-
     }
     cam.end();
     
@@ -149,59 +151,4 @@ void ofApp::explodeButtonPressed() {
     for (int i = 0; i < shapes.size(); i++) {
         shapes[i].explode();
     }
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
 }
