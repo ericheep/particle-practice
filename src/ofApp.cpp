@@ -4,8 +4,7 @@
 void ofApp::setup(){
     ofDisableArbTex();
     
-    fresnel.load("fresnel");
-    // feedback.load("feedback");
+    lighting.load("lighting");
     
     randomButton.addListener(this, &ofApp::randomButtonPressed);
     swapButton.addListener(this, &ofApp::swapButtonPressed);
@@ -15,7 +14,7 @@ void ofApp::setup(){
     gui.setSize(150, 70);
     gui.setDefaultHeight(12);
     gui.add(primitiveTypeSlider.setup("primitive type", 0, 0, 3));
-    gui.add(shapeTypeSlider.setup("shape", 0, 0, 6));
+    gui.add(shapeTypeSlider.setup("shape", 0, 0, 7));
     gui.add(numMeshesSlider.setup("meshes", 200, 0, 400));
     gui.add(pointSizeSlider.setup("size", 2, 1, 15));
     gui.add(rotateXSlider.setup("rotate x", 0.0, 0.0, 1.0));
@@ -25,10 +24,10 @@ void ofApp::setup(){
     gui.add(fuzzySlider.setup("fuzzy", 0.0, 0.0, 10.0));
     gui.add(randomFollow.setup("follow", 0.9, 0.0, 1.0));
     
-    gui.add(simplexRate.setup("simp size", 0, 0., 100.0));
-    gui.add(simplexOffset.setup("simp offset", 0.004, 0.0, 0.1));
-    gui.add(simplexDepth.setup("simp depth", 0.025, 0.0, 0.05));
-    gui.add(simplexWrap.setup("simp wrap", PI, 0.0, TWO_PI));
+    gui.add(simplexAmountSlider.setup("simp amount", 5, 0, 25));
+    gui.add(simplexOffset.setup("simp offset", 0.004, 0.0, 0.01));
+    gui.add(simplexDepth.setup("simp depth", 0.01, 0.0, 0.10));
+    gui.add(simplexWrap.setup("simp wrap", 2 * TWO_PI, 0.0, 2 * TWO_PI));
     gui.add(simplexPow.setup("simp pow", 1.0, 0.0, 8.0));
 
     gui.add(hueStartSlider.setup("hue start", 0.75, 0.0, 1.0));
@@ -41,7 +40,10 @@ void ofApp::setup(){
     gui.add(brightnessAmountSlider.setup("bri amount", 1.0, 0.0, 1.0));
     gui.add(brightnessCurveSlider.setup("bri curve", 1.0, 0.0, 2.0));
     
-    gui.add(bumpDepthSlider.setup("bump depth", 0.03, 0.0, 1.0));
+    gui.add(alphaAmountSlider.setup("alpha amount", 1.0, 0.0, 1.0));
+    gui.add(alphaCurveSlider.setup("alpha curve", 1.0, 0.0, 2.0));
+    
+    gui.add(bumpDepthSlider.setup("bump depth", 1.0, 0.0, 1000.0));
     gui.add(scaleFactorSlider.setup("scale factor", 0.0, -10.0, 10.0));
 
     gui.add(randomButton.setup("random", 20, 12));
@@ -52,46 +54,24 @@ void ofApp::setup(){
     cam.setDistance(300);
     cam.setTarget(ofVec3f(0.0, 0.0, 0.0));
     
-    shapes.push_back(Shape(500, 8, 2, 100));
+    shapes.push_back(Shape(100, 8, 2, 100));
     shapes[0].setShapeType(0);
-    
-    xRotationInc = 0.0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    xRotationInc += rotateXSlider;
-    
-    if (xRotationInc > 360) {
-        xRotationInc -= 360;
-    }
-        
     for (int i = 0; i < shapes.size(); i++) {
         shapes[i].setFuzzy(fuzzySlider);
-        shapes[i].setSimplexMorph(simplexRate, simplexDepth, simplexOffset, simplexWrap, simplexPow);
+        shapes[i].setSimplexMorph(simplexAmountSlider, simplexDepth, simplexOffset, simplexWrap, simplexPow);
         
-        if (shapes[i].getPrimitiveType() != primitiveTypeSlider) {
-            shapes[i].setPrimitiveType(primitiveTypeSlider);
-        }
+        shapes[i].setPrimitiveType(primitiveTypeSlider);
+        shapes[i].setShapeType(shapeTypeSlider);
+        shapes[i].setMeshes(numMeshesSlider);
+        shapes[i].setRandomFollow(randomFollow);
+        shapes[i].setPointSize(pointSizeSlider);
         
-        if (shapes[i].getShapeType() != shapeTypeSlider) {
-            shapes[i].setShapeType(shapeTypeSlider);
-        }
-        
-        if (shapes[i].getNumMeshes() != numMeshesSlider) {
-            shapes[i].setMeshes(numMeshesSlider);
-        }
-        
-        if (shapes[i].getRandomFollow() != randomFollow) {
-            shapes[i].setRandomFollow(randomFollow);
-        }
-        
-        ofVec3f rot = ofVec3f(rotateXSlider, rotateYSlider, rotateZSlider);
-        shapes[i].rotate(rot);
-        
-        if (shapes[i].getPointSize() != pointSizeSlider) {
-            shapes[i].setPointSize(pointSizeSlider);
-        }
+        ofVec3f rotation = ofVec3f(rotateXSlider, rotateYSlider, rotateZSlider);
+        shapes[i].setRotation(rotation);
         
         shapes[i].update();
     }
@@ -107,27 +87,30 @@ void ofApp::draw(){
     
     cam.begin();
     {
-        fresnel.begin();
+        lighting.begin();
         {
             for (int i = 0;  i < shapes.size(); i++) {
                 shapes[i].draw();
                 shapes[i].clearMesh();
             }
             
-            fresnel.setUniform3f("u_cameraPosition", cameraPosition);
-            fresnel.setUniform1f("u_hueStart", hueStartSlider);
-            fresnel.setUniform1f("u_hueDepth", hueDepthSlider);
-            fresnel.setUniform1f("u_hueCurve", hueCurveSlider);
+            lighting.setUniform3f("u_cameraPosition", cameraPosition);
+            lighting.setUniform1f("u_hueStart", hueStartSlider);
+            lighting.setUniform1f("u_hueDepth", hueDepthSlider);
+            lighting.setUniform1f("u_hueCurve", hueCurveSlider);
             
-            fresnel.setUniform1f("u_saturationAmount", saturationAmountSlider);
-            fresnel.setUniform1f("u_saturationCurve", saturationCurveSlider);
+            lighting.setUniform1f("u_saturationAmount", saturationAmountSlider);
+            lighting.setUniform1f("u_saturationCurve", saturationCurveSlider);
 
-            fresnel.setUniform1f("u_brightnessAmount", brightnessAmountSlider);
-            fresnel.setUniform1f("u_brightnessCurve", brightnessCurveSlider);
+            lighting.setUniform1f("u_brightnessAmount", brightnessAmountSlider);
+            lighting.setUniform1f("u_brightnessCurve", brightnessCurveSlider);
             
-            fresnel.setUniform1f("u_bumpDepth", bumpDepthSlider);
+            lighting.setUniform1f("u_alphaAmount", alphaAmountSlider);
+            lighting.setUniform1f("u_alphaCurve", alphaCurveSlider);
+            
+            lighting.setUniform1f("u_bumpDepth", bumpDepthSlider);
         }
-        fresnel.end();
+        lighting.end();
     }
     cam.end();
     

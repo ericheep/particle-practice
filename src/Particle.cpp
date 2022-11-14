@@ -16,33 +16,28 @@ Particle::Particle(float _x, float _y, float _z) {
     tar.y = y;
     tar.z = z;
     
-    off = 0.0;
-    
     morph.x = 0;
     morph.y = 0;
     morph.z = 0;
     
-    scalar = 0.0;
+    follow = 0.5;
+    fuzzy = 0.0;
+    
+    simplexRate = 0;
+    simplexDepth = 0;
+    simplexOffset = 0;
+    simplexWrap = 0;
+    simplexPow = 0;;
+    
+    off = 0.0;
 }
 
-void Particle::updateTarget(float _x, float _y, float _z) {
-    tar.x = _x;
-    tar.y = _y;
-    tar.z = _z;
-}
-
-ofVec3f Particle::getTarget() {
-    return tar;
+void Particle::setCenter(ofVec3f _center) {
+    center = _center;
 }
 
 void Particle::setTarget(ofVec3f _tar) {
     tar = _tar;
-}
-
-void Particle::setPosition(float _x, float _y, float _z) {
-    pos.x = _x;
-    pos.y = _y;
-    pos.z = _z;
 }
 
 void Particle::setPosition(ofVec3f _pos) {
@@ -53,24 +48,20 @@ void Particle::setNormal(ofVec3f _normal) {
     normal = _normal;
 }
 
+void Particle::setRotation(ofVec3f _rotation) {
+    rotation = _rotation;
+}
+
 ofVec3f Particle::getNormal() {
     return normal;
 }
 
-void Particle::setTriangleNormal(ofVec3f _triangleNormal) {
-    triangleNormal = _triangleNormal;
+void Particle::setFollow(float _follow) {
+    follow = _follow;
 }
 
-ofVec3f Particle::getTriangleNormal() {
-    return triangleNormal;
-}
-
-void Particle::setScalar(float s) {
-    scalar = s;
-}
-
-void Particle::setFollow(float f) {
-    follow = f;
+void Particle::setFuzzy(float _fuzzy) {
+    fuzzy = _fuzzy;
 }
 
 void Particle::pointBetweenPoint(float per) {
@@ -79,7 +70,13 @@ void Particle::pointBetweenPoint(float per) {
   pos.z = pos.z + (tar.z - pos.z) * per;
 }
 
-void Particle::simplexMorph() {
+void Particle::updateFuzzy() {
+    pos.x += ofRandom(-fuzzy, fuzzy);
+    pos.y += ofRandom(-fuzzy, fuzzy);
+    pos.z += ofRandom(-fuzzy, fuzzy);
+}
+
+void Particle::updateSimplexMorph() {
     float x = pos.x * simplexDepth + off;
     float y = pos.y * simplexDepth + off;
     float z = pos.z * simplexDepth + off;
@@ -106,14 +103,10 @@ void Particle::simplexMorph() {
     off += simplexOffset;
 }
 
-//--------------------------------------------------------------
 void Particle::update(){
-    simplexMorph();
+    updateFuzzy();
+    updateSimplexMorph();
     pointBetweenPoint(follow);
-}
-
-//--------------------------------------------------------------
-void Particle::draw(){
 }
 
 void Particle::setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow) {
@@ -122,10 +115,6 @@ void Particle::setSimplexMorph(float _rate, float _depth, float _offset, float _
     simplexOffset = _offset;
     simplexWrap = _wrap;
     simplexPow = _pow;
-}
-
-float Particle::getScalar() {
-    return scalar;
 }
 
 ofVec3f Particle::getPosition() {

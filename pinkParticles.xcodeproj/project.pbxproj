@@ -58,8 +58,8 @@
 		029684CF678F70F6D3537A29 /* OscOutboundPacketStream.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = OscOutboundPacketStream.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscOutboundPacketStream.h; sourceTree = SOURCE_ROOT; };
 		062EAADD291329C2008C1AB3 /* feedback.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = feedback.frag; path = bin/data/feedback.frag; sourceTree = SOURCE_ROOT; };
 		062EAADE291340E5008C1AB3 /* feedback.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = feedback.vert; path = bin/data/feedback.vert; sourceTree = SOURCE_ROOT; };
-		065E3AEB290DE98900FE7238 /* fresnel.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fresnel.frag; path = bin/data/fresnel.frag; sourceTree = SOURCE_ROOT; };
-		065E3AEC290DE98900FE7238 /* fresnel.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fresnel.vert; path = bin/data/fresnel.vert; sourceTree = SOURCE_ROOT; };
+		065E3AEB290DE98900FE7238 /* lighting.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = lighting.frag; path = bin/data/lighting.frag; sourceTree = SOURCE_ROOT; };
+		065E3AEC290DE98900FE7238 /* lighting.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = lighting.vert; path = bin/data/lighting.vert; sourceTree = SOURCE_ROOT; };
 		0A1DAC09F322AE313A40706D /* ofxToggle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = ofxToggle.h; path = ../../../addons/ofxGui/src/ofxToggle.h; sourceTree = SOURCE_ROOT; };
 		0AED834CE4DEC5260AF302A2 /* ofxOscParameterSync.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxOscParameterSync.cpp; path = ../../../addons/ofxOsc/src/ofxOscParameterSync.cpp; sourceTree = SOURCE_ROOT; };
 		15F2C6477A769C03A56D1401 /* ofxSlider.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = ofxSlider.cpp; path = ../../../addons/ofxGui/src/ofxSlider.cpp; sourceTree = SOURCE_ROOT; };
@@ -790,8 +790,8 @@
 				062EAADE291340E5008C1AB3 /* feedback.vert */,
 				062EAADD291329C2008C1AB3 /* feedback.frag */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
-				065E3AEB290DE98900FE7238 /* fresnel.frag */,
-				065E3AEC290DE98900FE7238 /* fresnel.vert */,
+				065E3AEB290DE98900FE7238 /* lighting.frag */,
+				065E3AEC290DE98900FE7238 /* lighting.vert */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				E9AA5FD1EDF04CD1F5FB1686 /* Particle.cpp */,

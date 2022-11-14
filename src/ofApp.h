@@ -18,12 +18,9 @@ class ofApp : public ofBaseApp{
         void randomButtonPressed();
         void swapButtonPressed();
         void explodeButtonPressed();
-    
-        float xRotationInc;
-    
+        
         ofEasyCam cam;
-        ofShader fresnel;
-        ofShader feedback;
+        ofShader lighting;
 
         ofxIntSlider primitiveTypeSlider;
         ofxIntSlider shapeTypeSlider;
@@ -34,7 +31,7 @@ class ofApp : public ofBaseApp{
         ofxFloatSlider randomFollow;
     
         // simplex sliders
-        ofxFloatSlider simplexRate;
+        ofxFloatSlider simplexAmountSlider;
         ofxFloatSlider simplexDepth;
         ofxFloatSlider simplexOffset;
         ofxFloatSlider simplexWrap;
@@ -55,6 +52,9 @@ class ofApp : public ofBaseApp{
     
         ofxFloatSlider brightnessAmountSlider;
         ofxFloatSlider brightnessCurveSlider;
+    
+        ofxFloatSlider alphaAmountSlider;
+        ofxFloatSlider alphaCurveSlider;
     
         ofxFloatSlider scaleFactorSlider;
         ofxFloatSlider bumpDepthSlider;

@@ -11,7 +11,6 @@ Shape::Shape(int _meshes, float _ma, float _mb, float _radius) {
     a = 1;
     b = 1;
     
-    fuzzy = 0.0;
     randomFollow = 0.0;
         
     ma = _ma;
@@ -19,6 +18,28 @@ Shape::Shape(int _meshes, float _ma, float _mb, float _radius) {
     radius = _radius;
     
     setMeshes(_meshes);
+    
+    center = ofVec3f(0.0, 0.0, 0.0);
+    mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+}
+
+void Shape::setMeshes(int _numMeshes) {
+    if (numMeshes != _numMeshes) {
+        numMeshes = _numMeshes;
+        
+        particles.clear();
+        for (int i = 0; i < numMeshes; i++) {
+            vector<Particle> particleRow;
+            for (int j = 0; j < numMeshes; j++) {
+                Particle p = Particle(0, 0, 0);
+                particleRow.push_back(p);
+            }
+            
+            particles.push_back(particleRow);
+        }
+        
+        setShape();
+    }
 }
 
 void Shape::setShapeA(float m, float n1, float n2, float n3) {
@@ -35,96 +56,102 @@ void Shape::setShapeB(float m, float n1, float n2, float n3) {
   n3b = n3;
 }
 
-void Shape::setPointSize(int _pointSize) {
-    pointSize = _pointSize;
-    glPointSize(pointSize);
-}
-
-int Shape::getPointSize() {
-    return pointSize;
-}
-
-void Shape::random() {
-    for (int i = 0; i < numMeshes; i++) {
-        for (int j = 0; j < numMeshes; j++) {
-            float x = ofRandom(-ofGetWidth(), ofGetWidth());
-            float y = ofRandom(-ofGetWidth(), ofGetWidth());
-            float z = ofRandom(-ofGetWidth(), ofGetWidth());
-
-            particles[i][j].setPosition(x, y, z);
-        }
-    }
-}
-
-void Shape::swap() {
-    for (int i = 0; i < numMeshes; i++) {
-        for (int j = 0; j < numMeshes; j++) {
-            ofVec3f position = particles[i][j].getPosition();
-            particles[i][j].setPosition(-position);
-        }
-    }
-}
-
-void Shape::explode() {
-    
-}
-
-void Shape::setRandomFollow(float randomFollow) {
-    for (int i = 0; i < numMeshes; i++) {
-        for (int j = 0; j < numMeshes; j++) {
-            float mapped = ofMap(randomFollow, 0.0, 1.0, 0.001, 0.1);
-            float rf = ofRandom(0.001, mapped);
-            particles[i][j].setFollow(rf);
-        }
-    }
-}
-
-void Shape::rotate(ofVec3f r) {
-    for (int i = 0; i < numMeshes; i++) {
-        for (int j = 0; j < numMeshes; j++) {
-            ofVec3f rot = particles[i][j].getTarget().getRotated(r.x, r.y, r.z);
-            particles[i][j].setTarget(rot);
-        }
-    }
-}
-
-void Shape::setMeshes(int _numMeshes) {
-    numMeshes = _numMeshes;
-    particles.clear();
-
-    for (int i = 0; i < numMeshes; i++) {
-        vector<Particle> particleRow;
-        for (int j = 0; j < numMeshes; j++) {
-            Particle p = Particle(0, 0, 0);
-            particleRow.push_back(p);
+void Shape::setShapeType(int _shapeType) {
+    if (shapeType != _shapeType) {
+        switch(_shapeType) {
+            case 0:
+                // sphere
+                setShapeA(0, 1, 1, 1);
+                setShapeB(0, 1, 1, 1);
+                setShape();
+                break;
+            case 1:
+                //squirtle
+                setShapeA(8, 60, 100, 30);
+                setShapeB(2, 10, 10, 10);
+                setShape();
+                break;
+            case 2:
+                // flower
+                setShapeA(6, 1, 1, 1);
+                setShapeB(3, 1, 1, 1);
+                setShape();
+                break;
+            case 3:
+                // ufo
+                setShapeA(0.2, 0.1, 1.7, 1.7);
+                setShapeB(2.0, 0.5, 0.2, 0.2);
+                setShape();
+                break;
+            case 4:
+                // super flower
+                setShapeA(5.2, 0.04, 1.70, 1.70);
+                setShapeB(0., 1.0, 1.0, 1.0);
+                setShape();
+                break;
+            case 5:
+                // classic
+                setShapeA(8.0, -8.11, -0.08, 93);
+                setShapeB(2.0, 0.99, 97.67, -0.439);
+                setShape();
+                break;
+            case 6:
+                // symbol
+                setShapeA(6, 60., 55, 1000);
+                setShapeB(6, 250, 100, 100);
+                setShape();
+                break;
+            case 7:
+                // symbol
+                setShapeA(7, 0.2, 1.7, 1.7);
+                setShapeB(7, 0.2, 1.7, 1.7);
+                setShape();
+                break;
         }
         
-        particles.push_back(particleRow);
+        shapeType = _shapeType;
     }
+}
+
+float Shape::supershape(float theta, float m, float n1, float n2, float n3) {
+    float t1 = fabs((1.0 / a) * cos(m * theta / 4.0));
+    t1 = pow(t1, n2);
+    float t2 = fabs((1.0/ b) * sin(m * theta / 4.0));
+    t2 = pow(t2, n3);
+    float t3 = t1 + t2;
     
-    updateShape();
-    setRandomFollow(randomFollow);
+    return pow(t3, -1 / n1);
 }
 
-ofVec3f calculateNormal(ofVec3f a, ofVec3f b, ofVec3f c) {
-    ofVec3f BA = (b - a);
-    ofVec3f CA = (c - a);
-
-    return (BA.cross(CA));
+void Shape::setCenter(ofVec3f _center) {
+    center = _center;
 }
 
-//  = ( (2*(Zleft - Zright) - Zupright + Zdownleft + Zup - Zdown) / ax,
-// (2*(Zdown - Zup)    + Zupright + Zdownleft - Zup - Zleft) / ay, 6 )
-
-ofVec3f calculateSixAdjacentNormals(ofVec3f l, ofVec3f p, ofVec3f r, ofVec3f u, ofVec3f ur, ofVec3f d, ofVec3f dl) {
-    float x = 2 * (l.z - r.z) - u.z + dl.z + u.z - d.z / abs(p.x - l.x);
-    float y = 2 * (d.z - u.z) + ur.z + dl.z - u.z - l.z / abs(p.y - u.y);
-    float z = 6;
-    
-    return ofVec3f(x, y, z).normalize();
+void Shape::setPointSize(int _pointSize) {
+    glPointSize(_pointSize);
 }
 
-void Shape::updateShape() {
+void Shape::setRandomFollow(float _randomFollow) {
+    randomFollow = _randomFollow;
+}
+
+void Shape::setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow){
+    for (int i = 0; i < numMeshes; i++) {
+        for (int j = 0; j < numMeshes; j++) {
+            particles[i][j].setSimplexMorph(_rate, _depth, _offset, _wrap, _pow);
+        }
+    }
+}
+
+void Shape::setRotation(ofVec3f rotation) {
+    for (int i = 0; i < numMeshes; i++) {
+        for (int j = 0; j < numMeshes; j++) {
+            particles[i][j].setRotation(rotation);
+        }
+    }
+}
+
+void Shape::setShape() {
    for (int i = 0; i < numMeshes; i++) {
      float lat = ofMap(i, 0, numMeshes - 1, -HALF_PI, HALF_PI);
      float r2 = supershape(lat, mb, n1b, n2b, n3b);
@@ -137,35 +164,36 @@ void Shape::updateShape() {
        float y = radius * r1 * sin(lon) * r2 * cos(lat);
        float z = radius * r2 * sin(lat);
 
-       particles[i][j].updateTarget(x, y, z);
+       particles[i][j].setTarget(ofVec3f(x, y, z));
      }
    }
 }
 
-void Shape::updatePositions() {
+// update
+void Shape::updateParticles() {
     for (int i = 0; i < numMeshes; i++) {
         for (int j = 0; j < numMeshes; j++) {
-            if (fuzzy > 0) {
-                particles[i][j].pos.x += ofRandom(-fuzzy, fuzzy);
-                particles[i][j].pos.y += ofRandom(-fuzzy, fuzzy);
-                particles[i][j].pos.z += ofRandom(-fuzzy, fuzzy);
-            }
-            
             particles[i][j].update();
         }
     }
 }
 
-ofVec3f calculateFourAdjacentNormals(ofVec3f l, ofVec3f p, ofVec3f r, ofVec3f u, ofVec3f d) {
-    float x = (l.z - r.z) / abs(p.x - l.x);
-    float y = (d.z - u.z) / abs(p.y - u.y);
-    float z = 2;
-    
-    return ofVec3f(x, y, z).normalize();
+ofVec3f calculateNormal(ofVec3f a, ofVec3f b, ofVec3f c) {
+    ofVec3f BA = (b - a);
+    ofVec3f CA = (c - a);
+
+    return (BA.cross(CA));
+}
+
+void Shape::updateRowNormals(int i1, int i2) {
+    for (int j = 0; j < numMeshes; j++) {
+        ofVec3f normal = particles[i2][j].getNormal();
+        particles[i1][j].setNormal(normal);
+    }
 }
 
 void Shape::updateNormals() {
-    for (int i = 0; i < numMeshes; i++) {
+    for (int i = 1; i < numMeshes - 1; i++) {
         for (int j = 0; j < numMeshes; j++) {
             ofVec3f l, p, r, u, d;
             if (j == 0) {
@@ -179,16 +207,8 @@ void Shape::updateNormals() {
                 r = particles[i][j + 1].getPosition();
             }
             
-            if (i == 0) {
-                u = particles[i + 1][(j + int(numMeshes / 2)) % numMeshes].getPosition();
-                d = particles[i + 1][j].getPosition();
-            } else if (i == numMeshes - 1) {
-                u = particles[i - 1][j].getPosition();
-                d = particles[i - 1][(j + int(numMeshes / 2)) % numMeshes].getPosition();
-            } else {
-                u = particles[i - 1][j].getPosition();
-                d = particles[i + 1][j].getPosition();
-            }
+            u = particles[i - 1][j].getPosition();
+            d = particles[i + 1][j].getPosition();
                         
             ofVec3f n1 = calculateNormal(l, p, u);
             ofVec3f n2 = calculateNormal(u, p, r);
@@ -199,6 +219,8 @@ void Shape::updateNormals() {
             particles[i][j].setNormal(normal);
         }
     }
+    updateRowNormals(0, 1);
+    updateRowNormals(numMeshes - 1, numMeshes - 2);
 }
 
 void Shape::updateMesh() {
@@ -216,7 +238,7 @@ void Shape::updateMesh() {
 }
 
 void Shape::update(){
-    updatePositions();
+    updateParticles();
     updateNormals();
     updateMesh();
 }
@@ -231,114 +253,56 @@ void Shape::clearMesh() {
 }
 
 void Shape::setFuzzy(float _fuzzy){
-    fuzzy = _fuzzy;
-}
-
-void Shape::setHueStart(float _hue) {
-    hue = _hue;
-}
-
-void Shape::setHueDepth(float _depth) {
-    depth = _depth;
-}
-
-void Shape::setPointSaturation(float _saturation) {
-    saturation = _saturation;
-}
-
-void Shape::setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow){
     for (int i = 0; i < numMeshes; i++) {
         for (int j = 0; j < numMeshes; j++) {
-            particles[i][j].setSimplexMorph(_rate, _depth, _offset, _wrap, _pow);
+            particles[i][j].setFuzzy(_fuzzy);
         }
     }
 }
 
-float Shape::supershape(float theta, float m, float n1, float n2, float n3) {
-    float t1 = fabs((1.0 / a) * cos(m * theta / 4.0));
-    t1 = pow(t1, n2);
-    float t2 = fabs((1.0/ b) * sin(m * theta / 4.0));
-    t2 = pow(t2, n3);
-    float t3 = t1 + t2;
+void Shape::setPrimitiveType(int _primitiveType) {
+    if(primitiveType != _primitiveType) {
+        switch(_primitiveType) {
+            case 0:
+                mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+                break;
+            case 1:
+                mesh.setMode(OF_PRIMITIVE_POINTS);
+                break;
+            case 2:
+                mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
+                break;
+            case 3:
+                mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+                break;
+        }
+                
+        primitiveType = _primitiveType;
+    }
+}
+
+// actions
+void Shape::random() {
+    for (int i = 0; i < numMeshes; i++) {
+        for (int j = 0; j < numMeshes; j++) {
+            float x = ofRandom(-ofGetWidth(), ofGetWidth());
+            float y = ofRandom(-ofGetWidth(), ofGetWidth());
+            float z = ofRandom(-ofGetWidth(), ofGetWidth());
+
+            particles[i][j].setPosition(ofVec3f(x, y, z));
+        }
+    }
+}
+
+void Shape::swap() {
+    for (int i = 0; i < numMeshes; i++) {
+        for (int j = 0; j < numMeshes; j++) {
+            ofVec3f position = particles[i][j].getPosition();
+            particles[i][j].setPosition(-position);
+        }
+    }
+}
+
+void Shape::explode() {
     
-    return pow(t3, -1 / n1);
-}
-
-void Shape::setShapeType(int which) {
-    switch(which) {
-        case 0:
-            // sphere
-            setShapeA(0, 1, 1, 1);
-            setShapeB(0, 1, 1, 1);
-            updateShape();
-            break;
-        case 1:
-            //squirtle
-            setShapeA(8, 60, 100, 30);
-            setShapeB(2, 10, 10, 10);
-            updateShape();
-            break;
-        case 2:
-            // flower
-            setShapeA(6, 1, 1, 1);
-            setShapeB(3, 1, 1, 1);
-            updateShape();
-            break;
-        case 3:
-            // ufo
-            setShapeA(0.2, 0.1, 1.7, 1.7);
-            setShapeB(2.0, 0.5, 0.2, 0.2);
-            updateShape();
-            break;
-        case 4:
-            // super flower
-            setShapeA(5.2, 0.04, 1.70, 1.70);
-            setShapeB(0., 1.0, 1.0, 1.0);
-            updateShape();
-            break;
-        case 5:
-            // classic
-            setShapeA(8.0, -8.11, -0.08, 93);
-            setShapeB(2.0, 0.99, 97.67, -0.439);
-            updateShape();
-            break;
-        case 6:
-            // symbol
-            setShapeA(6, 60., 55, 1000);
-            setShapeB(6, 250, 100, 100);
-            updateShape();
-            break;
-    }
-    shapeType = which;
-}
-
-void Shape::setPrimitiveType(int type) {
-    primitiveType = type;
-    switch(type) {
-        case 0:
-            mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-            break;
-        case 1:
-            mesh.setMode(OF_PRIMITIVE_POINTS);
-            break;
-        case 2:
-            mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
-            break;
-    }
-}
-
-int Shape::getPrimitiveType() {
-    return primitiveType;
-}
-
-int Shape::getShapeType() {
-    return shapeType;
-}
-
-int Shape::getNumMeshes() {
-    return numMeshes;
-}
-
-float Shape::getRandomFollow() {
-    return randomFollow;
 }
