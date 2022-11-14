@@ -10,9 +10,7 @@
 Shape::Shape(int _meshes, float _ma, float _mb, float _radius) {
     a = 1;
     b = 1;
-    
-    randomFollow = 0.0;
-        
+            
     ma = _ma;
     mb = _mb;
     radius = _radius;
@@ -132,7 +130,11 @@ void Shape::setPointSize(int _pointSize) {
 }
 
 void Shape::setRandomFollow(float _randomFollow) {
-    randomFollow = _randomFollow;
+    for (int i = 0; i < numMeshes; i++) {
+        for (int j = 0; j < numMeshes; j++) {
+            particles[i][j].setRandomFollow(_randomFollow);
+        }
+    }
 }
 
 void Shape::setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow){
@@ -147,6 +149,20 @@ void Shape::setRotation(ofVec3f rotation) {
     for (int i = 0; i < numMeshes; i++) {
         for (int j = 0; j < numMeshes; j++) {
             particles[i][j].setRotation(rotation);
+        }
+    }
+}
+
+void Shape::setTwist(ofVec3f _twist) {
+    for (int i = 0; i < numMeshes; i++) {
+        ofVec3f twist(0, 0, 0);
+
+        twist.x = (float(i) / numMeshes) * _twist.x;
+        twist.y = (float(i) / numMeshes) * _twist.y;
+        twist.z = (float(i) / numMeshes) * _twist.z;
+        
+        for (int j = 0; j < numMeshes; j++) {
+            particles[i][j].setTwist(twist);
         }
     }
 }
@@ -167,6 +183,35 @@ void Shape::setShape() {
        particles[i][j].setTarget(ofVec3f(x, y, z));
      }
    }
+}
+
+void Shape::setFuzzy(float _fuzzy){
+    for (int i = 0; i < numMeshes; i++) {
+        for (int j = 0; j < numMeshes; j++) {
+            particles[i][j].setFuzzy(_fuzzy);
+        }
+    }
+}
+
+void Shape::setPrimitiveType(int _primitiveType) {
+    if(primitiveType != _primitiveType) {
+        switch(_primitiveType) {
+            case 0:
+                mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+                break;
+            case 1:
+                mesh.setMode(OF_PRIMITIVE_POINTS);
+                break;
+            case 2:
+                mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
+                break;
+            case 3:
+                mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+                break;
+        }
+                
+        primitiveType = _primitiveType;
+    }
 }
 
 // update
@@ -250,35 +295,6 @@ void Shape::draw(){
 void Shape::clearMesh() {
     mesh.clearVertices();
     mesh.clearNormals();
-}
-
-void Shape::setFuzzy(float _fuzzy){
-    for (int i = 0; i < numMeshes; i++) {
-        for (int j = 0; j < numMeshes; j++) {
-            particles[i][j].setFuzzy(_fuzzy);
-        }
-    }
-}
-
-void Shape::setPrimitiveType(int _primitiveType) {
-    if(primitiveType != _primitiveType) {
-        switch(_primitiveType) {
-            case 0:
-                mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-                break;
-            case 1:
-                mesh.setMode(OF_PRIMITIVE_POINTS);
-                break;
-            case 2:
-                mesh.setMode(OF_PRIMITIVE_LINE_LOOP);
-                break;
-            case 3:
-                mesh.setMode(OF_PRIMITIVE_LINE_STRIP);
-                break;
-        }
-                
-        primitiveType = _primitiveType;
-    }
 }
 
 // actions

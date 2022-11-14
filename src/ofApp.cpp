@@ -17,9 +17,9 @@ void ofApp::setup(){
     gui.add(shapeTypeSlider.setup("shape", 0, 0, 7));
     gui.add(numMeshesSlider.setup("meshes", 200, 0, 400));
     gui.add(pointSizeSlider.setup("size", 2, 1, 15));
-    gui.add(rotateXSlider.setup("rotate x", 0.0, 0.0, 1.0));
-    gui.add(rotateYSlider.setup("rotate y", 0.0, 0.0, 1.0));
-    gui.add(rotateZSlider.setup("rotate z", 0.0, 0.0, 1.0));
+    gui.add(rotateXSlider.setup("rotate x", 0.0, -PI * 16, PI * 16));
+    gui.add(rotateYSlider.setup("rotate y", 0.0, -PI * 16, PI * 16));
+    gui.add(rotateZSlider.setup("rotate z", 0.0, -PI * 16, PI * 16));
 
     gui.add(fuzzySlider.setup("fuzzy", 0.0, 0.0, 10.0));
     gui.add(randomFollow.setup("follow", 0.9, 0.0, 1.0));
@@ -69,9 +69,10 @@ void ofApp::update(){
         shapes[i].setMeshes(numMeshesSlider);
         shapes[i].setRandomFollow(randomFollow);
         shapes[i].setPointSize(pointSizeSlider);
+        shapes[i].setTwist(ofVec3f(0, 0, 0));
         
         ofVec3f rotation = ofVec3f(rotateXSlider, rotateYSlider, rotateZSlider);
-        shapes[i].setRotation(rotation);
+        shapes[i].setTwist(rotation);
         
         shapes[i].update();
     }

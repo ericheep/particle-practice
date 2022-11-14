@@ -34,8 +34,8 @@ public:
     void setFuzzy(float fuzzy);
     void setCenter(ofVec3f center);
     void setPer(float p);
-    void setSimplexMorph(float _rate, float _depth, float _offset, float _wrap, float _pow);
-    void setFollow(float f);
+    void setSimplexMorph(float rate, float depth, float offset, float wrap, float pow);
+    void setRandomFollow(float randomFollow);
         
     void update();
 private:
@@ -46,11 +46,12 @@ private:
     bool simplexFlag, windMorphFlag;
     float simplexRate, simplexDepth, simplexOffset, simplexWrap, simplexPow;
     
-    ofVec3f pos, tar, morph, normal, center, rotation, brownian;
+    ofVec3f pos, tar, morph, normal, center, rotation, twist, twisted, brownian;
     
     void pointBetweenPoint(float per);
     void updateSimplexMorph();
     void updateFuzzy();
+    void updateTwist();
 };
 
 #endif /* Particle_hpp */

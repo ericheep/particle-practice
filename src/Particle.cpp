@@ -52,12 +52,16 @@ void Particle::setRotation(ofVec3f _rotation) {
     rotation = _rotation;
 }
 
+void Particle::setTwist(ofVec3f _twist) {
+    twist = _twist;
+}
+
 ofVec3f Particle::getNormal() {
     return normal;
 }
 
-void Particle::setFollow(float _follow) {
-    follow = _follow;
+void Particle::setRandomFollow(float _randomFollow) {
+    follow = _randomFollow;
 }
 
 void Particle::setFuzzy(float _fuzzy) {
@@ -101,9 +105,15 @@ void Particle::updateSimplexMorph() {
     morph.z = v.z;
     
     off += simplexOffset;
+    pos += morph;
+}
+
+void Particle::updateTwist() {
+    twisted = pos.getRotatedRad(twist.x, twist.y, twist.z);
 }
 
 void Particle::update(){
+    updateTwist();
     updateFuzzy();
     updateSimplexMorph();
     pointBetweenPoint(follow);
@@ -118,5 +128,5 @@ void Particle::setSimplexMorph(float _rate, float _depth, float _offset, float _
 }
 
 ofVec3f Particle::getPosition() {
-    return pos + morph;
+    return twisted;
 }

@@ -39,6 +39,7 @@ public:
     void setPointSize(int size);
     void setPrimitiveType(int type);
     void setRotation(ofVec3f rotation);
+    void setTwist(ofVec3f twist);
     void setRandomFollow(float randomFollow);
     void setCenter(ofVec3f center);
     
@@ -51,7 +52,7 @@ private:
     float a, b;
     float ma, n1a, n2a, n3a, ra;
     float mb, n1b, n2b, n3b, rb;
-    float radius, randomFollow, hue, depth, saturation;
+    float radius;
     int shapeType, numMeshes, primitiveType;
     
     void updateParticles();
